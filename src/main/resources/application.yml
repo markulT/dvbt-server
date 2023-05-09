@@ -1,0 +1,19 @@
+server:
+  port: 8000
+
+spring:
+  datasource:
+    username: postgres
+    password: 1234
+    url: jdbc:postgresql://localhost:5433/osmic
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+jwt:
+  token:
+    secret: 4D635166546A576E5A7234753778214125442A472D4B6150645267556B58703273357638792F423F4528482B4D6251655468566D597133743677397A24432646
+    validityTimeInMilliseconds: "20000"
+    refreshSecret: 8acb9624876bc1cfa5111d9cd992a95140debf4a2b5ad91be6829ffa36429bc03e955ebb3348e3f858621b27bd8306f9a2d2201053bcea514fe3a04a4f570cd82f945fe2e22f9439ccdb168eede66fbee065b13c2dbdde0b896751cca898e61caf4c906450fbaaf406c5b3258f2f46b596c2b15411a5fc752dcfb35c9c8e9bdf
+    refreshValidityInMills: "604800000"
