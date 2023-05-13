@@ -1,5 +1,8 @@
 package com.osmos.server.orders.dto;
 
+import com.osmos.server.engineer.dto.EngineerDto;
+import com.osmos.server.orders.entities.Order;
+import com.osmos.server.orders.entities.OrderStatus;
 import com.osmos.server.products.dto.ProductDTO;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +12,24 @@ import java.util.List;
 @Data
 @Builder
 public class FullOrderDto {
-    protected String location;
-    protected String orderedBy;
-    protected String orderedFullName;
-    protected double finalPrice;
-    protected List<ProductDTO> productList;
+    private String location;
+    private String orderedBy;
+    private String orderedFullName;
+    private double finalPrice;
+    private List<ProductDTO> productList;
+    private OrderStatus orderStatus;
+    private EngineerDto engineer;
+
+    public static FullOrderDto copyFromEntity(Order order) {
+        return FullOrderDto.builder()
+                .location(order.getLocation())
+                .orderedBy(order.getOrderedBy().getId().toString())
+                .orderedFullName(order.getOrderedBy().getFullName())
+                .finalPrice(order.getFinalPrice())
+                .productList(order.getProductList().stream().map(ProductDTO::clone).toList())
+                .orderStatus(order.getOrderStatus())
+                .engineer(EngineerDto.copyFromEntity(order.getEngineer()))
+                .build();
+    }
 
 }

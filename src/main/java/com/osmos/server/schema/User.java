@@ -14,8 +14,9 @@ import java.util.List;
 @Getter
 @Setter
 public class User extends BaseEntity {
-    @Column(name = "login")
-    private String login;
+
+//    @Column(name = "login")
+//    private String login;
     @Column(name = "email")
     private String email;
 
@@ -32,6 +33,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "orderedBy")
     private List<Order> orders;
+
+    @OneToOne()
+    private Order assignedTo;
 
     public void addRole(Role role) {
         roles.add(role);

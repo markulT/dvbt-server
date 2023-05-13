@@ -8,6 +8,8 @@ import com.osmos.server.schema.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class RoleService {
@@ -30,6 +32,19 @@ public class RoleService {
         User user = userRepo.getUserByEmail(username);
         user.getRoles().add(role);
         userRepo.save(user);
+    }
+
+    public boolean isUserEngineer(User user) {
+        return user.getRoles().contains(roleRepo.findRoleByName("ROLE_ENGINEER"));
+    }
+
+    public boolean isUserEngineer(String id) {
+        User user = userRepo.findById(UUID.fromString(id)).orElseThrow();
+        return isUserEngineer(user);
+    }
+
+    public boolean isUserAdmin(User user) {
+        return user.getRoles().contains(roleRepo.findRoleByName("ROLE_ADMIN"));
     }
 
 }

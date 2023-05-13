@@ -4,10 +4,7 @@ package com.osmos.server.orders.entities;
 import com.osmos.server.products.entities.Product;
 import com.osmos.server.schema.BaseEntity;
 import com.osmos.server.schema.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -17,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "orders")
 public class Order extends BaseEntity {
 
@@ -29,5 +27,11 @@ public class Order extends BaseEntity {
     private double finalPrice;
 
     private String location;
+
+    @OneToOne()
+    private User engineer;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
 
 }

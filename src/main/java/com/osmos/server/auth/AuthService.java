@@ -103,14 +103,13 @@ public class AuthService {
             }
 
             UUID userId = redisTokenService.getUserId(refreshToken);
-            System.out.println(userId.toString());
+
             if (userId == null) {
                 throw new UserUnauthorizedException("Such token is absent in database, that means user is not authorized");
             }
             User user = userRepo.findById(userId).orElseThrow(() -> new UserDoesNotExistException("User with such id does not exist"));
             boolean tokenIsValid = jwtProvider.validateRefresh(refreshToken);
-            System.out.println(tokenIsValid);
-            System.out.println(user.getEmail());
+
             if (!tokenIsValid) {
                 throw new RefreshException("incorrect token or user is not authorized currently");
             }
