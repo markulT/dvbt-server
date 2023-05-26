@@ -21,7 +21,7 @@ public class Order extends BaseEntity {
     @ManyToOne
     private User orderedBy;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> productList;
 
     private double finalPrice;

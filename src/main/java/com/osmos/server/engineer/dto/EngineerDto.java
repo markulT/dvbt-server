@@ -14,6 +14,7 @@ public class EngineerDto {
     private String id;
 
     public static EngineerDto copyFromEntity(User user) {
+        if (user==null) {return null;}
         return EngineerDto.builder()
                 .email(user.getEmail())
                 .fullName(user.getFullName())

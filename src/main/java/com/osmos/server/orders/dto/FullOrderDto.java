@@ -7,6 +7,7 @@ import com.osmos.server.products.dto.ProductDTO;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Data
@@ -18,6 +19,8 @@ public class FullOrderDto {
     private double finalPrice;
     private List<OrderItemDto> productList;
     private OrderStatus orderStatus;
+
+    @Nullable
     private EngineerDto engineer;
 
     public static FullOrderDto copyFromEntity(Order order) {

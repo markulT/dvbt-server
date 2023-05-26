@@ -33,6 +33,7 @@ public class OrderService {
     private final ProductsRepo productsRepo;
     private final UserRepo userRepo;
     private final RoleService roleService;
+    private final OrderItemRepo orderItemRepo;
 
 
 
@@ -57,23 +58,26 @@ public class OrderService {
         var currentUser = SecurityContextHolder.getContext().getAuthentication();
 //        List<Product> productList = fullOrderDto.getProductList().stream().map(productId->productsRepo.getProductById(UUID.fromString(productId))).toList();
         List<OrderItemDto> productList = fullOrderDto.getProductList();
-        System.out.println(productList);
+        List<OrderItem> orderItemList =productList.stream().map(product->{
+            OrderItem orderItem = OrderItem.builder()
+                    .quantity(product.getQuantity())
+                    .product(productsRepo.getProductById(UUID.fromString(product.getProductId())))
+                    .build();
+            return orderItem;
+        }).toList();
+
+
         Order order = Order.builder()
                 .location(fullOrderDto.getLocation())
                 .finalPrice(productList.stream().mapToDouble(this::countOrdersFinalPrice).sum())
                 .orderedBy(userRepo.getUserByEmail(currentUser.getName()))
-                .productList(productList.stream().map(product->{
-                    return OrderItem.builder()
-                            .quantity(product.getQuantity())
-                            .product(Product.builder()
-
-                                    .build())
-                            .build();
-                }).toList())
                 .paymentStatus(PaymentStatus.UNKNOWN)
                 .build();
-        System.out.println("shit");
-        System.out.println(order.getOrderedBy());
+        System.out.println();
+        order.setProductList(orderItemList.stream().map(orderItem -> {
+            orderItem.setOrder(order);
+            return orderItem;
+        }).toList());
         orderRepo.save(order);
         return FullOrderDto.copyFromEntity(order);
 
@@ -91,9 +95,13 @@ public class OrderService {
     }
 
     public OrderDto getOrder(String id) {
-
         Order order = orderRepo.findById(UUID.fromString(id)).orElseThrow();
         return OrderDto.copyFromEntity(order);
+    }
+
+    public FullOrderDto getOrderDetails(String id) {
+        Order order = orderRepo.findById(UUID.fromString(id)).orElseThrow();
+        return FullOrderDto.copyFromEntity(order);
     }
 
     public FullOrderDto assignEngineerToOrder(String orderId, String engineerId) {
