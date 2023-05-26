@@ -9,5 +9,5 @@ import java.util.List;
 @Builder
 public class CreateOrderDto {
     private String location;
-    private List<String> productList;
+    private List<OrderItemDto> productList;
 }

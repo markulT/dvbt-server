@@ -16,7 +16,7 @@ public class FullOrderDto {
     private String orderedBy;
     private String orderedFullName;
     private double finalPrice;
-    private List<ProductDTO> productList;
+    private List<OrderItemDto> productList;
     private OrderStatus orderStatus;
     private EngineerDto engineer;
 
@@ -26,7 +26,7 @@ public class FullOrderDto {
                 .orderedBy(order.getOrderedBy().getId().toString())
                 .orderedFullName(order.getOrderedBy().getFullName())
                 .finalPrice(order.getFinalPrice())
-                .productList(order.getProductList().stream().map(ProductDTO::clone).toList())
+                .productList(order.getProductList().stream().map(OrderItemDto::copy).toList())
                 .orderStatus(order.getOrderStatus())
                 .engineer(EngineerDto.copyFromEntity(order.getEngineer()))
                 .build();

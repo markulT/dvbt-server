@@ -102,12 +102,22 @@ public class AuthService {
                 throw new RefreshException("Refresh token is absent");
             }
 
-            UUID userId = redisTokenService.getUserId(refreshToken);
+//            UUID userId = redisTokenService.getUserId(refreshToken);
+//
+//            if (userId == null) {
+//                throw new UserUnauthorizedException("Such token is absent in database, that means user is not authorized");
+//            }
 
-            if (userId == null) {
+//            User user = userRepo.findById(userId).orElseThrow(() -> new UserDoesNotExistException("User with such id does not exist"));
+
+            User user = userRepo.getUserByEmail(jwtProvider.getClaimsRefresh(refreshToken).getSubject());
+
+            String token = redisTokenService.getTokenByUserId(user.getId().toString());
+
+            if(token == null) {
                 throw new UserUnauthorizedException("Such token is absent in database, that means user is not authorized");
             }
-            User user = userRepo.findById(userId).orElseThrow(() -> new UserDoesNotExistException("User with such id does not exist"));
+
             boolean tokenIsValid = jwtProvider.validateRefresh(refreshToken);
 
             if (!tokenIsValid) {

@@ -33,5 +33,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.0.4'
 	implementation 'redis.clients:jedis:4.3.1'
+	implementation 'io.minio:minio:8.4.3'
+	implementation 'com.stripe:stripe-java:22.19.0'
 }
 

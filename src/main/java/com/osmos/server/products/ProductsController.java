@@ -6,11 +6,16 @@ import com.osmos.server.responseDto.CreateEntity;
 import com.osmos.server.responseDto.GetAll;
 import com.osmos.server.responseDto.GetSingle;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 @RestController
@@ -93,6 +98,22 @@ public class ProductsController {
         return ResponseEntity.ok(GetAll.<CategoryDto>builder()
                 .list(productsService.getAllCategories())
                 .build());
+    }
+
+    @PutMapping("/image/update")
+    public ResponseEntity<?> updateImage(@RequestParam("file") MultipartFile file, @RequestParam("productId") String productId) {
+        System.out.println(productId);
+        return ResponseEntity.ok(productsService.updateImage(file, productId));
+    }
+
+    @GetMapping("/image/{name}")
+    public ResponseEntity<?> getImage(@PathVariable("name") String imgName) {
+        InputStream inputStream = productsService.getImage(imgName);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        httpHeaders.setContentDispositionFormData("attachment", "filename.ext");
+        InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
+        return new ResponseEntity<>(inputStreamResource, httpHeaders, HttpStatus.OK );
     }
 
 }

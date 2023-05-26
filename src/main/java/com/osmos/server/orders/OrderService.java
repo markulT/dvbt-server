@@ -3,8 +3,11 @@ package com.osmos.server.orders;
 import com.osmos.server.orders.dto.CreateOrderDto;
 import com.osmos.server.orders.dto.FullOrderDto;
 import com.osmos.server.orders.dto.OrderDto;
+import com.osmos.server.orders.dto.OrderItemDto;
 import com.osmos.server.orders.entities.Order;
+import com.osmos.server.orders.entities.OrderItem;
 import com.osmos.server.orders.entities.OrderStatus;
+import com.osmos.server.orders.entities.PaymentStatus;
 import com.osmos.server.orders.exceptions.UserIsNotEngineer;
 import com.osmos.server.products.ProductsRepo;
 import com.osmos.server.products.entities.Product;
@@ -13,6 +16,7 @@ import com.osmos.server.repo.UserRepo;
 import com.osmos.server.roles.RoleService;
 import com.osmos.server.schema.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -49,18 +54,33 @@ public class OrderService {
     }
 
     public FullOrderDto create(CreateOrderDto fullOrderDto) {
-
         var currentUser = SecurityContextHolder.getContext().getAuthentication();
-        List<Product> productList = fullOrderDto.getProductList().stream().map(productId->productsRepo.getProductById(UUID.fromString(productId))).toList();
+//        List<Product> productList = fullOrderDto.getProductList().stream().map(productId->productsRepo.getProductById(UUID.fromString(productId))).toList();
+        List<OrderItemDto> productList = fullOrderDto.getProductList();
+        System.out.println(productList);
         Order order = Order.builder()
                 .location(fullOrderDto.getLocation())
-                .finalPrice(productList.stream().mapToDouble(Product::getPrice).sum())
+                .finalPrice(productList.stream().mapToDouble(this::countOrdersFinalPrice).sum())
                 .orderedBy(userRepo.getUserByEmail(currentUser.getName()))
-                .productList(productList)
+                .productList(productList.stream().map(product->{
+                    return OrderItem.builder()
+                            .quantity(product.getQuantity())
+                            .product(Product.builder()
+
+                                    .build())
+                            .build();
+                }).toList())
+                .paymentStatus(PaymentStatus.UNKNOWN)
                 .build();
+        System.out.println("shit");
+        System.out.println(order.getOrderedBy());
         orderRepo.save(order);
         return FullOrderDto.copyFromEntity(order);
 
+    }
+
+    public double countOrdersFinalPrice(OrderItemDto orderItemDto) {
+        return orderItemDto.getQuantity() * productsRepo.getProductById(UUID.fromString(orderItemDto.getProductId())).getPrice();
     }
 
 

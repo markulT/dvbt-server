@@ -1,5 +1,6 @@
 package com.osmos.server.products;
 
+import com.osmos.server.minio.FileManager;
 import com.osmos.server.products.dto.CategoryDto;
 import com.osmos.server.products.dto.CreateProductDto;
 import com.osmos.server.products.dto.CreateShortProductDto;
@@ -10,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +24,7 @@ public class ProductsService {
 
     private final ProductsRepo productsRepo;
     private final CategoryRepo categoryRepo;
+    private final FileManager fileManager;
 
     public List<ProductDTO> getAll(int pageNumber) {
         return productsRepo.findAll(PageRequest.of(pageNumber, 20)).getContent().stream().map(
@@ -112,6 +116,20 @@ public class ProductsService {
         return CreateShortProductDto.copy(product);
     }
 
+    public String updateImage(MultipartFile file, String productId) {
+        Product product = productsRepo.findById(UUID.fromString(productId)).orElseThrow();
+        fileManager.deleteFile("image-bucket", productId);
+        product.setImgName(productId);
+        productsRepo.save(product);
+        return fileManager.uploadFile(file, "image-bucket", product.getId().toString());
+    }
 
+    public InputStream getImage(String imageName) {
+        return fileManager.downloadFile("image-bucket", imageName);
+    }
+
+    public String getImgLink(String imageName) {
+        return fileManager.getFileLink("image-bucket", imageName);
+    }
 
 }

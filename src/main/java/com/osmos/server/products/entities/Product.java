@@ -51,4 +51,8 @@ public class Product extends BaseEntity {
     @Column(name = "packagement")
     private String packagement;
 
+    public static Product copy() {
+        return Product.builder().build();
+    }
+
 }

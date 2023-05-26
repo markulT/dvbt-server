@@ -21,8 +21,8 @@ public class Order extends BaseEntity {
     @ManyToOne
     private User orderedBy;
 
-    @ManyToMany
-    private List<Product> productList;
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> productList;
 
     private double finalPrice;
 
@@ -33,5 +33,10 @@ public class Order extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
+
+
 
 }
