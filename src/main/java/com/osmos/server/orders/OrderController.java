@@ -50,7 +50,7 @@ public class OrderController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<GetSingle<FullOrderDto>> getOrder(@PathVariable("id") String id) {
-        System.out.println(orderService.getOrderDetails(id));
+
         return ResponseEntity.ok(GetSingle.<FullOrderDto>builder()
                 .item(orderService.getOrderDetails(id))
                 .build());

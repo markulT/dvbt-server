@@ -26,16 +26,52 @@ public class ProductsService {
     private final CategoryRepo categoryRepo;
     private final FileManager fileManager;
 
-    public List<ProductDTO> getAll(int pageNumber) {
-        return productsRepo.findAll(PageRequest.of(pageNumber, 20)).getContent().stream().map(
+    public List<ProductDTO> getAll(int pageNumber, int pageSize) {
+        if (pageSize > 50) {
+            pageSize = 50;
+        }
+        return productsRepo.findAll(PageRequest.of(pageNumber - 1, pageSize)).getContent().stream().map(
                 ProductDTO::clone
         ).toList();
+    }
+
+    public long getProductAmount() {
+        return productsRepo.count();
     }
 
     public List<ProductDTO> getAll() {
         return productsRepo.findAll().stream().map(
                 ProductDTO::clone
         ).toList();
+    }
+
+    public ProductDTO updateProductCategory(String productId, String categoryId) {
+        Category category = categoryRepo.findById(UUID.fromString(categoryId)).orElseThrow();
+        Product product = productsRepo.findById(UUID.fromString(productId)).orElseThrow();
+        product.setCategory(category);
+        productsRepo.save(product);
+        return ProductDTO.clone(product);
+    }
+
+    public List<ProductDTO> getAllByCategory(String categoryId) {
+        Category category = categoryRepo.findById(UUID.fromString(categoryId)).orElseThrow();
+        return productsRepo.findAllByCategory(category).stream().map(ProductDTO::clone).toList();
+    }
+
+    public List<ProductDTO> getAllByCategory(String categoryId, int pageNumber, int pageSize) {
+        Category category = categoryRepo.findById(UUID.fromString(categoryId)).orElseThrow();
+        System.out.println(category.getName());
+        if (pageSize > 50) {
+            pageSize = 50;
+        }
+        List<ProductDTO> productDTOList = productsRepo.findAllByCategory(PageRequest.of(pageNumber - 1, pageSize ),category).stream().map(ProductDTO::clone).toList();
+        System.out.println(productDTOList);
+        return productDTOList;
+    }
+
+    public long getProductAmountInCategory(String categoryId) {
+        Category category = categoryRepo.findById(UUID.fromString(categoryId)).orElseThrow();
+        return productsRepo.countAllByCategory(category);
     }
 
 

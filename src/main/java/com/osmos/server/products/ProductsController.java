@@ -4,6 +4,7 @@ package com.osmos.server.products;
 import com.osmos.server.products.dto.*;
 import com.osmos.server.responseDto.CreateEntity;
 import com.osmos.server.responseDto.GetAll;
+import com.osmos.server.responseDto.GetPage;
 import com.osmos.server.responseDto.GetSingle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -37,6 +38,25 @@ public class ProductsController {
         );
     }
 
+    @GetMapping("/page")
+    public ResponseEntity<GetPage<ProductDTO>> getPage(@RequestParam int pageNumber, @RequestParam int pageSize) {
+
+        return ResponseEntity.ok(
+                GetPage.<ProductDTO>builder()
+                        .page(productsService.getAll(pageNumber, pageSize))
+                        .length(productsService.getProductAmount())
+                        .build()
+        );
+    }
+
+    @GetMapping("/products/{categoryId}")
+    public ResponseEntity<GetPage<ProductDTO>> getAllProductsByCategory(@PathVariable("categoryId") String categoryId, @RequestParam int pageNumber, @RequestParam int pageSize) {
+        return ResponseEntity.ok(GetPage.<ProductDTO>builder()
+                        .page(productsService.getAllByCategory(categoryId, pageNumber, pageSize))
+                        .length(productsService.getProductAmountInCategory(categoryId))
+                .build());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<GetSingle<ProductDTO>> getProduct(@PathVariable("id") String id) {
         return ResponseEntity.status(HttpStatus.OK).body(GetSingle.<ProductDTO>builder().item(productsService.getProduct(id)).build());
@@ -46,6 +66,7 @@ public class ProductsController {
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<CreateEntity<ProductDTO>> add(@RequestBody() CreateProductDto createProductDto) {
+        System.out.println(createProductDto);
         return ResponseEntity.ok(
                 CreateEntity.<ProductDTO>builder()
                         .entity(productsService.addProduct(createProductDto))
@@ -75,6 +96,14 @@ public class ProductsController {
         ProductDTO updatedProduct = productsService.update(UUID.fromString(updateProductDTO.getId()), updateProductDTO.getFieldToChange(), updateProductDTO.getFieldValue());
         return ResponseEntity.ok(updatedProduct);
     }
+
+    @PutMapping("/update/category")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<GetSingle<ProductDTO>> updateCategory(@RequestBody() AssignCategoryDto assignCategoryDto) {
+        ProductDTO updatedProduct = productsService.updateProductCategory(assignCategoryDto.getProductId(), assignCategoryDto.categoryId);
+        return ResponseEntity.ok(GetSingle.<ProductDTO>builder().item(updatedProduct).build());
+    }
+
 
     @PostMapping("/create/category")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -106,8 +135,9 @@ public class ProductsController {
         return ResponseEntity.ok(productsService.updateImage(file, productId));
     }
 
-    @GetMapping("/image/{name}")
+    @GetMapping("/imageUrl/{name}")
     public ResponseEntity<?> getImage(@PathVariable("name") String imgName) {
+        System.out.println("getting image");
         InputStream inputStream = productsService.getImage(imgName);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
