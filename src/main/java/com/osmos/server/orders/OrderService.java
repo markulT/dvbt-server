@@ -9,6 +9,7 @@ import com.osmos.server.orders.entities.OrderItem;
 import com.osmos.server.orders.entities.OrderStatus;
 import com.osmos.server.orders.entities.PaymentStatus;
 import com.osmos.server.orders.exceptions.UserIsNotEngineer;
+import com.osmos.server.orders.exceptions.orderCreationExceptions.OrderCreationException;
 import com.osmos.server.products.ProductsRepo;
 import com.osmos.server.products.entities.Product;
 import com.osmos.server.repo.RoleRepo;
@@ -21,8 +22,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -34,7 +38,6 @@ public class OrderService {
     private final UserRepo userRepo;
     private final RoleService roleService;
     private final OrderItemRepo orderItemRepo;
-
 
 
     public boolean deleteOrder(String id) {
@@ -55,32 +58,51 @@ public class OrderService {
     }
 
     public FullOrderDto create(CreateOrderDto fullOrderDto) {
-        var currentUser = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            var currentUser = SecurityContextHolder.getContext().getAuthentication();
 //        List<Product> productList = fullOrderDto.getProductList().stream().map(productId->productsRepo.getProductById(UUID.fromString(productId))).toList();
-        List<OrderItemDto> productList = fullOrderDto.getProductList();
-        List<OrderItem> orderItemList =productList.stream().map(product->{
-            OrderItem orderItem = OrderItem.builder()
-                    .quantity(product.getQuantity())
-                    .product(productsRepo.getProductById(UUID.fromString(product.getProductId())))
+            List<OrderItemDto> productList = fullOrderDto.getProductList();
+            List<OrderItem> orderItemList = productList.stream().map(product -> {
+                OrderItem orderItem = OrderItem.builder()
+                        .quantity(product.getQuantity())
+                        .product(productsRepo.getProductById(UUID.fromString(product.getProductId())))
+                        .build();
+                return orderItem;
+            }).toList();
+
+            System.out.println(orderItemList.size());
+            Order order = Order.builder()
+                    .location(fullOrderDto.getLocation())
+                    .finalPrice(productList.stream().mapToDouble(this::countOrdersFinalPrice).sum())
+                    .orderedBy(userRepo.getUserByEmail(currentUser.getName()))
+                    .paymentStatus(PaymentStatus.UNKNOWN)
                     .build();
-            return orderItem;
-        }).toList();
+            order.setProductList(orderItemList.stream().map(orderItem -> {
+                orderItem.setOrder(order);
+                return orderItem;
+            }).collect(Collectors.toCollection(ArrayList::new)));
+            log.info("Product list is : ");
+            System.out.println(order.getProductList().getClass());
+            Order order1 = orderRepo.save(order);
+            System.out.println(order1.getId().toString());
+            return FullOrderDto.copyFromEntity(order1);
+        } catch (RuntimeException e) {
+            System.out.println("error");
+            log.error(e.getMessage(), e.getCause());
+            log.error(String.valueOf(e.getStackTrace()));
+            throw new OrderCreationException("Error while creating");
+        }
+    }
 
+    public void setClientSecretToOrder(String clientSecret, String orderId) throws OrderCreationException {
+        try {
+            Order order = orderRepo.findById(UUID.fromString(orderId)).orElseThrow();
 
-        Order order = Order.builder()
-                .location(fullOrderDto.getLocation())
-                .finalPrice(productList.stream().mapToDouble(this::countOrdersFinalPrice).sum())
-                .orderedBy(userRepo.getUserByEmail(currentUser.getName()))
-                .paymentStatus(PaymentStatus.UNKNOWN)
-                .build();
-        System.out.println();
-        order.setProductList(orderItemList.stream().map(orderItem -> {
-            orderItem.setOrder(order);
-            return orderItem;
-        }).toList());
-        orderRepo.save(order);
-        return FullOrderDto.copyFromEntity(order);
-
+            order.setClientSecret(clientSecret);
+            orderRepo.save(order);
+        } catch (NoSuchElementException e) {
+            throw new OrderCreationException("Error at setting client secret to order (because the order does not exist)");
+        }
     }
 
     public double countOrdersFinalPrice(OrderItemDto orderItemDto) {

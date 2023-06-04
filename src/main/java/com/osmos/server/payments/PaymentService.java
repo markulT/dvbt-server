@@ -8,7 +8,7 @@ public interface PaymentService {
 
     public PaymentIntent intentPayment(long amount, Currency currency) throws StripeException;
 
-    public void confirmPayment();
+    public void confirmPayment(String clientSecret);
 
     public void failedPayment();
 

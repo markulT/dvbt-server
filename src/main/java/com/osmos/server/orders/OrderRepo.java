@@ -18,4 +18,6 @@ public interface OrderRepo extends JpaRepository<Order, UUID> {
 
     List<Order> findAllByOrderedBy(User user);
 
+    Optional<Order> findByClientSecret(String clientSecret);
+
 }

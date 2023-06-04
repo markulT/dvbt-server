@@ -9,6 +9,7 @@ import lombok.Data;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -19,11 +20,13 @@ public class FullOrderDto {
     private double finalPrice;
     private List<OrderItemDto> productList;
     private OrderStatus orderStatus;
+    private Optional<String> id;
 
     @Nullable
     private EngineerDto engineer;
 
     public static FullOrderDto copyFromEntity(Order order) {
+        System.out.println(order.getId());
         return FullOrderDto.builder()
                 .location(order.getLocation())
                 .orderedBy(order.getOrderedBy().getId().toString())
@@ -32,6 +35,7 @@ public class FullOrderDto {
                 .productList(order.getProductList().stream().map(OrderItemDto::copy).toList())
                 .orderStatus(order.getOrderStatus())
                 .engineer(EngineerDto.copyFromEntity(order.getEngineer()))
+                .id(Optional.ofNullable(order.getId().toString()))
                 .build();
     }
 

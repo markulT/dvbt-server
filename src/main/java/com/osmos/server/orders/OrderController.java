@@ -2,6 +2,7 @@ package com.osmos.server.orders;
 
 import com.osmos.server.orders.dto.*;
 import com.osmos.server.orders.entities.OrderStatus;
+import com.osmos.server.orders.exceptions.orderCreationExceptions.OrderCreationException;
 import com.osmos.server.payments.Currency;
 import com.osmos.server.payments.PaymentService;
 import com.osmos.server.payments.dto.PaymentIntentResponse;
@@ -11,6 +12,7 @@ import com.osmos.server.responseDto.GetSingle;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/order")
 @RequiredArgsConstructor
+@Slf4j
 public class OrderController {
 
     private final OrderService orderService;
@@ -27,13 +30,17 @@ public class OrderController {
     @PostMapping("/create")
     public ResponseEntity<PaymentIntentResponse> create(@RequestBody() CreateOrderDto createOrderDto) {
         try {
+            log.info("runs");
             FullOrderDto fullOrderDto = orderService.create(createOrderDto);
             PaymentIntent paymentIntent = paymentService.intentPayment((long) fullOrderDto.getFinalPrice(), Currency.UAH);
+            log.info("order is created");
+            System.out.println(fullOrderDto.getId().orElse(""));
+            orderService.setClientSecretToOrder(paymentIntent.getClientSecret(), fullOrderDto.getId().orElse(""));
 //            return ResponseEntity.ok(CreateEntity.<FullOrderDto>builder()
 //                    .entity(fullOrderDto).build());
             return ResponseEntity.ok(PaymentIntentResponse.builder()
                     .clientSecret(paymentIntent.getClientSecret()).build());
-        } catch (StripeException e) {
+        } catch (StripeException | OrderCreationException e) {
             return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(null);
         }
     }
