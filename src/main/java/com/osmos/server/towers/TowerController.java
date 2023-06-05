@@ -26,7 +26,6 @@ public class TowerController {
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<CreateEntity<TowerDto>> create(@RequestBody() TowerDto towerDto) {
-        System.out.println(towerDto);
         return ResponseEntity.ok(
                 CreateEntity.<TowerDto>builder()
                         .entity(towerService.create(towerDto))
