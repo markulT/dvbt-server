@@ -40,12 +40,15 @@ public class ProductDTO {
 
     private String description;
 
+    private double rangeInMeters;
+
     ProductDTO(Product product, String id) {
         this.name = product.getName();
         this.title = product.getTitle();
         this.price = product.getPrice();
         this.imgName = product.getImgName();
         this.category = CategoryDto.builder().name(product.getCategory().getName()).build();
+        this.rangeInMeters = product.getRangeInMeters();
         this.id = id;
     }
 
@@ -68,6 +71,7 @@ public class ProductDTO {
                 .price(product.getPrice())
                 .length(product.getLength())
                 .description(product.getDescription())
+                .rangeInMeters(product.getRangeInMeters())
                 .build();
     }
 

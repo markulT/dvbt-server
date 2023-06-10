@@ -146,4 +146,9 @@ public class ProductsController {
         return new ResponseEntity<>(inputStreamResource, httpHeaders, HttpStatus.OK );
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam("distance") double distance, @RequestParam("obstacle") int obstacle, @RequestParam("geo") int geo) {
+        return ResponseEntity.ok(productsService.search(distance, obstacle, geo));
+    }
+
 }

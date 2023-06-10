@@ -25,8 +25,6 @@ public class JwtUser implements UserDetails {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
     }
 
-
-
     @Override
     public boolean isAccountNonExpired() {
         return true;

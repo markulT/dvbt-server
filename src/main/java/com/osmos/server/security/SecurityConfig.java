@@ -39,6 +39,7 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 //        configuration.setAllowCredentials(true);
+
         configuration.addAllowedOrigin("http://localhost:3000/");
         configuration.setAllowedMethods(List.of("GET", "POST", "DELETE", "PATCH", "PUT", "OPTIONS"));
         configuration.addAllowedHeader("*");
@@ -54,7 +55,9 @@ public class SecurityConfig {
                 .addFilterBefore(corsFilterImpl, ChannelProcessingFilter.class)
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**", "/api/v1/products/products/**", "/api/v1/products/{id}", "/api/v1/products/getAll/categories",
-                        "/api/v1/products/imageUrl/{name}", "/api/v1/orders/create", "/api/v1/towers/all", "/api/v1/products/page", "/api/v1/payment/**").permitAll()
+                        "/api/v1/products/imageUrl/{name}", "/api/v1/orders/create", "/api/v1/towers/all", "/api/v1/products/page", "/api/v1/payment/**",
+                        "/api/v1/products/search"
+                ).permitAll()
                 .anyRequest().authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authenticationProvider(authenticationProvider());
 

@@ -6,5 +6,5 @@ import lombok.Data;
 public class UpdateProductDTO {
     private String id;
     private String fieldToChange;
-    private String fieldValue;
+    private Object fieldValue;
 }

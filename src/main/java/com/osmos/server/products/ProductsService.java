@@ -7,6 +7,7 @@ import com.osmos.server.products.dto.CreateShortProductDto;
 import com.osmos.server.products.dto.ProductDTO;
 import com.osmos.server.products.entities.Category;
 import com.osmos.server.products.entities.Product;
+import com.osmos.server.products.filters.SearchParams;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,8 @@ public class ProductsService {
     private final ProductsRepo productsRepo;
     private final CategoryRepo categoryRepo;
     private final FileManager fileManager;
+
+    private final SearchHandler searchHandler;
 
     public List<ProductDTO> getAll(int pageNumber, int pageSize) {
         if (pageSize > 50) {
@@ -106,6 +109,7 @@ public class ProductsService {
             return null;
         }
         field.setAccessible(true);
+        System.out.println(fieldValue);
         ReflectionUtils.setField(field, product, fieldValue);
         ProductDTO productDTO = ProductDTO.clone(product);
         productsRepo.save(product);
@@ -166,6 +170,23 @@ public class ProductsService {
 
     public String getImgLink(String imageName) {
         return fileManager.getFileLink("image-bucket", imageName);
+    }
+
+    public void test() {
+    }
+
+    public List<ProductDTO> search(double distance) {
+        return null;
+    }
+
+    public List<ProductDTO> search(double distance, int obstacle) {
+        return null;
+    }
+
+    public List<ProductDTO> search(double distance, int obstacle, int geo) {
+        double rating = searchHandler.search(new SearchParams(distance,obstacle,geo));
+        List<Product> products = productsRepo.findProductsByRangeInMeters(rating);
+        return products.stream().map(ProductDTO::clone).toList();
     }
 
 }

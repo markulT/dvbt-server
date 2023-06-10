@@ -33,4 +33,6 @@ public class CreateProductDto {
 
     private String description;
 
+    private double rangeInMeters;
+
 }

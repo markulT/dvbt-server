@@ -39,7 +39,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String userEmail = null;
 
         boolean isTokenValid = jwtProvider.validate(jwt);
-        System.out.println(isTokenValid);
         if (isTokenValid) {
             userEmail = jwtProvider.getClaims(jwt).getSubject();
         }

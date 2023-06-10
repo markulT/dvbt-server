@@ -30,10 +30,8 @@ public class OrderController {
     @PostMapping("/create")
     public ResponseEntity<PaymentIntentResponse> create(@RequestBody() CreateOrderDto createOrderDto) {
         try {
-            log.info("runs");
             FullOrderDto fullOrderDto = orderService.create(createOrderDto);
             PaymentIntent paymentIntent = paymentService.intentPayment((long) fullOrderDto.getFinalPrice(), Currency.UAH);
-            log.info("order is created");
             System.out.println(fullOrderDto.getId().orElse(""));
             orderService.setClientSecretToOrder(paymentIntent.getClientSecret(), fullOrderDto.getId().orElse(""));
 //            return ResponseEntity.ok(CreateEntity.<FullOrderDto>builder()

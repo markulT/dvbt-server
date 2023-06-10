@@ -70,7 +70,6 @@ public class OrderService {
                 return orderItem;
             }).toList();
 
-            System.out.println(orderItemList.size());
             Order order = Order.builder()
                     .location(fullOrderDto.getLocation())
                     .finalPrice(productList.stream().mapToDouble(this::countOrdersFinalPrice).sum())
@@ -81,15 +80,11 @@ public class OrderService {
                 orderItem.setOrder(order);
                 return orderItem;
             }).collect(Collectors.toCollection(ArrayList::new)));
-            log.info("Product list is : ");
-            System.out.println(order.getProductList().getClass());
+
             Order order1 = orderRepo.save(order);
-            System.out.println(order1.getId().toString());
+
             return FullOrderDto.copyFromEntity(order1);
         } catch (RuntimeException e) {
-            System.out.println("error");
-            log.error(e.getMessage(), e.getCause());
-            log.error(String.valueOf(e.getStackTrace()));
             throw new OrderCreationException("Error while creating");
         }
     }
