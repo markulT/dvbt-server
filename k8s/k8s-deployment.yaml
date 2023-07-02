@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dvbt-k8s
+spec:
+  selector:
+    matchLabels:
+      app: dvbt-k8s
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: dvbt-k8s
+    spec:
+      containers:
+        - name: dvbt-server
+          image: dvbt-server:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
