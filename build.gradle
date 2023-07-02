@@ -36,5 +36,6 @@ dependencies {
 	implementation 'io.minio:minio:8.4.3'
 	implementation 'com.stripe:stripe-java:22.19.0'
 	implementation 'org.reflections:reflections:0.10.2'
+
 }
 

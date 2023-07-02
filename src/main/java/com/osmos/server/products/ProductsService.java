@@ -97,7 +97,9 @@ public class ProductsService {
     }
 
     public boolean deleteProduct(UUID id) {
-        productsRepo.deleteById(id);
+        Product product = productsRepo.findById(id).orElseThrow();
+        fileManager.deleteFile("image-bucket", product.getId().toString());
+        productsRepo.delete(product);
         return true;
     }
 
@@ -109,7 +111,6 @@ public class ProductsService {
             return null;
         }
         field.setAccessible(true);
-        System.out.println(fieldValue);
         ReflectionUtils.setField(field, product, fieldValue);
         ProductDTO productDTO = ProductDTO.clone(product);
         productsRepo.save(product);

@@ -6,11 +6,11 @@ spring:
     username: postgres
     password: 1234
     url: jdbc:postgresql://localhost:5433/osmic
-
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
+    open-in-view: false
 jwt:
   token:
     secret: 4D635166546A576E5A7234753778214125442A472D4B6150645267556B58703273357638792F423F4528482B4D6251655468566D597133743677397A24432646

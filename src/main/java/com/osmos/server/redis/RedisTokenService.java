@@ -13,7 +13,6 @@ public class RedisTokenService {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void setToken(String userId, String token) {
-
         redisTemplate.opsForValue().set(userId, token);
     }
 

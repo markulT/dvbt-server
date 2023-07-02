@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**", "/api/v1/products/products/**", "/api/v1/products/{id}", "/api/v1/products/getAll/categories",
                         "/api/v1/products/imageUrl/{name}", "/api/v1/orders/create", "/api/v1/towers/all", "/api/v1/products/page", "/api/v1/payment/**",
-                        "/api/v1/products/search"
+                        "/api/v1/products/search", "/api/v1/banner/image/{name}", "/api/v1/banner/last"
                 ).permitAll()
                 .anyRequest().authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authenticationProvider(authenticationProvider());

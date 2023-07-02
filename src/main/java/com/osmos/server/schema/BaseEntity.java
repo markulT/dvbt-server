@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -13,17 +14,17 @@ import java.util.UUID;
 public class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    protected UUID id;
 
     @CreatedDate
     @Column(name = "created")
-    private Date created;
+    protected LocalDateTime created;
 
     @LastModifiedDate
     @Column(name = "updated")
-    private Date updated;
+    protected Date updated;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private Status status;
+    protected Status status;
 }

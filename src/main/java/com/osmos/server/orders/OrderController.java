@@ -27,18 +27,27 @@ public class OrderController {
     private final OrderService orderService;
     private final PaymentService paymentService;
 
+//    @PostMapping("/create")
+//    public ResponseEntity<PaymentIntentResponse> create(@RequestBody() CreateOrderDto createOrderDto) {
+//        try {
+//            FullOrderDto fullOrderDto = orderService.create(createOrderDto);
+//            PaymentIntent paymentIntent = paymentService.intentPayment((long) fullOrderDto.getFinalPrice(), Currency.UAH);
+//            orderService.setClientSecretToOrder(paymentIntent.getClientSecret(), fullOrderDto.getId().orElse(""));
+////            return ResponseEntity.ok(CreateEntity.<FullOrderDto>builder()
+////                    .entity(fullOrderDto).build());
+//            return ResponseEntity.ok(PaymentIntentResponse.builder()
+//                    .clientSecret(paymentIntent.getClientSecret()).build());
+//        } catch (StripeException | OrderCreationException e) {
+//            return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(null);
+//        }
+//    }
+
     @PostMapping("/create")
-    public ResponseEntity<PaymentIntentResponse> create(@RequestBody() CreateOrderDto createOrderDto) {
+    public ResponseEntity<?> create(@RequestBody() CreateOrderDto createOrderDto) {
         try {
             FullOrderDto fullOrderDto = orderService.create(createOrderDto);
-            PaymentIntent paymentIntent = paymentService.intentPayment((long) fullOrderDto.getFinalPrice(), Currency.UAH);
-            System.out.println(fullOrderDto.getId().orElse(""));
-            orderService.setClientSecretToOrder(paymentIntent.getClientSecret(), fullOrderDto.getId().orElse(""));
-//            return ResponseEntity.ok(CreateEntity.<FullOrderDto>builder()
-//                    .entity(fullOrderDto).build());
-            return ResponseEntity.ok(PaymentIntentResponse.builder()
-                    .clientSecret(paymentIntent.getClientSecret()).build());
-        } catch (StripeException | OrderCreationException e) {
+            return ResponseEntity.ok(CreateEntity.<FullOrderDto>builder().entity(fullOrderDto).build());
+        } catch (OrderCreationException e) {
             return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(null);
         }
     }

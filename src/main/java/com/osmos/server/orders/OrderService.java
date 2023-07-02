@@ -22,10 +22,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -76,6 +74,7 @@ public class OrderService {
                     .orderedBy(userRepo.getUserByEmail(currentUser.getName()))
                     .paymentStatus(PaymentStatus.UNKNOWN)
                     .build();
+            order.setCreated(LocalDateTime.now());
             order.setProductList(orderItemList.stream().map(orderItem -> {
                 orderItem.setOrder(order);
                 return orderItem;

@@ -137,7 +137,6 @@ public class ProductsController {
 
     @GetMapping("/imageUrl/{name}")
     public ResponseEntity<?> getImage(@PathVariable("name") String imgName) {
-        System.out.println("getting image");
         InputStream inputStream = productsService.getImage(imgName);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
