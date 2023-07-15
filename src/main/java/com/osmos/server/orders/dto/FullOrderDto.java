@@ -26,7 +26,8 @@ public class FullOrderDto {
     private EngineerDto engineer;
 
     public static FullOrderDto copyFromEntity(Order order) {
-        System.out.println(order.getId());
+        System.out.println("product list : ");
+        System.out.println(order.getProductList());
         return FullOrderDto.builder()
                 .location(order.getLocation())
                 .orderedBy(order.getOrderedBy().getId().toString())

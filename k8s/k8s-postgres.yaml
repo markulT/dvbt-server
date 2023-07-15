@@ -24,10 +24,15 @@ spec:
           volumeMounts:
             - mountPath: /docker-entrypoint-initdb.d
               name: init-script
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-data
       volumes:
         - name: init-script
           configMap:
             name: postgres-init-script
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
 
 ---
 
@@ -52,3 +57,16 @@ metadata:
 data:
   init.sql: |
     CREATE DATABASE osmic;
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

@@ -44,7 +44,7 @@ public class UsersService {
         return userRepo.count();
     }
 
-    public FullUserDto getFullUser(UUID id) {
+    public FullUserDto getUserFull(UUID id) {
         User user = userRepo.findById(id).orElseThrow();
 
         return FullUserDto.builder()
@@ -57,6 +57,11 @@ public class UsersService {
                         .orderedFullName(user.getFullName())
                         .build()).toList())
                 .build();
+    }
+
+    public UserDto getUserShort(String id) {
+        User user = userRepo.findById(UUID.fromString(id)).orElseThrow();
+        return UserDto.copyFromEntity(user);
     }
 
 }

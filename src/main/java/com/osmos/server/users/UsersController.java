@@ -36,7 +36,12 @@ public class UsersController {
 
     @GetMapping("/userInfo/{id}")
     public ResponseEntity<FullUserDto> getUserInfo(@PathVariable("id") String id) {
-        return ResponseEntity.ok(usersService.getFullUser(UUID.fromString(id)));
+        return ResponseEntity.ok(usersService.getUserFull(UUID.fromString(id)));
+    }
+
+    @GetMapping("/userShort/{id}")
+    public ResponseEntity<?> getUserShort(@PathVariable("id") String id) {
+        return ResponseEntity.ok(usersService.getUserShort(id));
     }
 
 

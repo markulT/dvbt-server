@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -42,6 +43,8 @@ public class ProductDTO {
 
     private double rangeInMeters;
 
+    private List<ProductDTO> complementary;
+
     ProductDTO(Product product, String id) {
         this.name = product.getName();
         this.title = product.getTitle();
@@ -56,7 +59,7 @@ public class ProductDTO {
         this(product, uuid.toString());
     }
 
-    public static ProductDTO clone(Product product) {
+    public static ProductDTO basicClone(Product product) {
         return ProductDTO.builder()
                 .name(product.getName())
                 .packagement(product.getPackagement())
@@ -73,6 +76,20 @@ public class ProductDTO {
                 .description(product.getDescription())
                 .rangeInMeters(product.getRangeInMeters())
                 .build();
+    }
+
+    public static ProductDTO clone(Product product) {
+        ProductDTO productDTO = basicClone(product);
+        System.out.println(product.getTitle());
+        System.out.println(product.getCategory());
+        if (product.getCategory() != null){
+            productDTO.setComplementary(product.getCategory().getAdditionals().stream().map(ProductDTO::basicClone).toList());
+        }
+        return productDTO;
+    }
+
+    public static ProductDTO cloneAdditional(Product product) {
+        return basicClone(product);
     }
 
 }

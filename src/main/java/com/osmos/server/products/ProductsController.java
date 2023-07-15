@@ -62,6 +62,14 @@ public class ProductsController {
         return ResponseEntity.status(HttpStatus.OK).body(GetSingle.<ProductDTO>builder().item(productsService.getProduct(id)).build());
     }
 
+    @GetMapping("/orderItem/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<GetSingle<ProductDTO>> getProductByOrderItem(@PathVariable("id") String id) {
+        System.out.println("getting that shit");
+        return ResponseEntity.status(HttpStatus.OK).body(GetSingle.<ProductDTO>builder()
+                .item(productsService.getProductByItemId(id))
+                .build());
+    }
 
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -116,6 +124,24 @@ public class ProductsController {
                 .build());
     }
 
+    @PostMapping("/addComplementary/category")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<GetSingle<CategoryDto>> addComplementary(@RequestBody() AddComplementaryDto body) {
+        return ResponseEntity.ok(GetSingle.<CategoryDto>builder()
+                        .item(productsService.addComplementaryToCategory(body.categoryId(), body.productId()))
+                .build());
+    }
+
+    @PutMapping("/removeComplementary/category")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<GetSingle<CategoryDto>> removeComplementary(@RequestBody() AddComplementaryDto body) {
+        return ResponseEntity.ok(
+                GetSingle.<CategoryDto>builder()
+                        .item(productsService.removeComplementaryFromCategory(body.categoryId(), body.productId()))
+                        .build()
+        );
+    }
+
     @DeleteMapping("/delete/category/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> deleteCategory(@PathVariable("id") String id) {
@@ -127,6 +153,13 @@ public class ProductsController {
         return ResponseEntity.ok(GetAll.<CategoryDto>builder()
                 .list(productsService.getAllCategories())
                 .build());
+    }
+
+    @GetMapping("/category/{id}")
+    public ResponseEntity<GetSingle<CategoryDto>> getCategory(@PathVariable("id") String id) {
+        return ResponseEntity.ok(
+                GetSingle.<CategoryDto>builder().item(productsService.getCategory(id)).build()
+        );
     }
 
     @PutMapping("/image/update")
@@ -149,5 +182,7 @@ public class ProductsController {
     public ResponseEntity<?> search(@RequestParam("distance") double distance, @RequestParam("obstacle") int obstacle, @RequestParam("geo") int geo) {
         return ResponseEntity.ok(productsService.search(distance, obstacle, geo));
     }
+
+
 
 }

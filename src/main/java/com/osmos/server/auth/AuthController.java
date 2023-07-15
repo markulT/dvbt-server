@@ -1,6 +1,7 @@
 package com.osmos.server.auth;
 
 import com.osmos.server.auth.dto.LoginDTO;
+import com.osmos.server.auth.exceptions.EmailAlreadyExistsException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -36,8 +37,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody() LoginRequestDto body) {
-        return ResponseEntity.ok().body(authService.register(body.getEmail(), body.getPassword()));
+    public ResponseEntity register(@RequestBody() RegisterRequestDto body) {
+        try {
+            return ResponseEntity.ok().body(authService.register(body));
+        } catch (EmailAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists");
+        }
     }
 
     @PostMapping("/refresh")

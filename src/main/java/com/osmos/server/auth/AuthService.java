@@ -67,16 +67,20 @@ public class AuthService {
         }
     }
 
-    public Map<String, Object> register(String email, String password) {
+    public Map<String, Object> register(RegisterRequestDto body) {
+        System.out.println(body.getEmail());
+        System.out.println(body.getPassword());
 
-        User user = userRepo.getUserByEmail(email);
+        User user = userRepo.getUserByEmail(body.getEmail());
         if (user != null) {
-            throw new EmailAlreadyExistsException("User with email " + email + " already exists");
+            throw new EmailAlreadyExistsException("User with email " + body.getEmail() + " already exists");
         }
-        Role role = roleRepo.findRoleByName("ROLE_ADMIN");
+        Role role = roleRepo.findRoleByName("ROLE_USER");
         User newUser = User.builder()
-                .email(email)
-                .password(passwordEncoder.encode(password))
+                .email(body.getEmail())
+                .password(passwordEncoder.encode(body.getEmail()))
+                .fullName(body.getFullName())
+                .phone(body.getPhone())
                 .roles(List.of(role))
                 .build();
         userRepo.save(newUser);
@@ -91,7 +95,7 @@ public class AuthService {
         redisTokenService.setToken(newUser.getId().toString(), refreshToken);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("token", token);
-        responseBody.put("email", email);
+        responseBody.put("email", body.getEmail());
         responseBody.put("refreshToken", refreshToken);
         return responseBody;
     }

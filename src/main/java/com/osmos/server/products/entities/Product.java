@@ -51,6 +51,9 @@ public class Product extends BaseEntity {
     @Column(name = "packagement")
     private String packagement;
 
+    @ManyToOne()
+    private Category complements;
+
     @Column(name = "range", columnDefinition = "double default 0.0")
     private double rangeInMeters;
 

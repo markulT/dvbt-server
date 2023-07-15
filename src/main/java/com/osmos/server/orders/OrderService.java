@@ -16,6 +16,7 @@ import com.osmos.server.repo.RoleRepo;
 import com.osmos.server.repo.UserRepo;
 import com.osmos.server.roles.RoleService;
 import com.osmos.server.schema.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -115,8 +116,12 @@ public class OrderService {
         return OrderDto.copyFromEntity(order);
     }
 
+    @Transactional
     public FullOrderDto getOrderDetails(String id) {
         Order order = orderRepo.findById(UUID.fromString(id)).orElseThrow();
+        order.getProductList().stream().forEach(productItem->{
+            System.out.println(productItem.getProduct().getTitle());
+        });
         return FullOrderDto.copyFromEntity(order);
     }
 

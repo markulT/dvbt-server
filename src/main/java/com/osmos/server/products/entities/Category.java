@@ -23,6 +23,10 @@ public class Category extends BaseEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "additionals")
+    @OneToMany(mappedBy = "complements")
+    private List<Product> additionals;
+
     @Column(name = "product_list")
     @OneToMany(mappedBy = "category")
     private List<Product> productList;
